@@ -3,11 +3,15 @@ package br.gov.serpro.adventure;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class EventListActivity extends Activity {
-
+	
+	private static final String TAG = "EventListActivity";
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	
@@ -17,6 +21,16 @@ public class EventListActivity extends Activity {
         
         PopulateListViewTask populateListViewTask = new PopulateListViewTask();
         populateListViewTask.execute();
+        
+        if (AdventureGCMUtil.checkPlayServices(this)) {
+
+        	AdventureGCMUtil.registrateInGCM(getApplicationContext(), this);
+        	
+        } else {
+            Log.i(TAG, "No valid Google Play Services APK found.");
+        }
+        
+        Log.i(TAG, "ID " + AdventureGCMUtil.getRegId());
         
     }
 
@@ -51,5 +65,11 @@ public class EventListActivity extends Activity {
 		}		
 		
 	}	
-	
+
+	@Override
+	protected void onResume() {
+	    super.onResume();
+	    AdventureGCMUtil.checkPlayServices(this);
+	}
+
 }
